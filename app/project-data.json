@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Mona Patel",
+      "status": "Active",
+      "recentActivity": "The quick-start checklist was updated with the latest local development steps.",
+      "priority": "High",
+      "summary": "Make it easier for new contributors to find their first meaningful task and get a working environment running."
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Jordan Lee",
+      "status": "Planning",
+      "recentActivity": "The team gathered component feedback from three product squads and grouped the top requests.",
+      "priority": "Medium",
+      "summary": "Align shared interface patterns so teams can build consistent, accessible experiences with less duplication."
+    },
+    {
+      "name": "Release Automation",
+      "owner": "Priya Nair",
+      "status": "At risk",
+      "recentActivity": "The staging workflow is waiting on a decision about the artifact retention policy.",
+      "priority": "High",
+      "summary": "Reduce manual release work while keeping deployments traceable and easy to roll back."
+    },
+    {
+      "name": "Documentation Migration",
+      "owner": "Sam Rivera",
+      "status": "Blocked",
+      "recentActivity": "Migration is paused until the destination site supports the team’s required access controls.",
+      "priority": "Medium",
+      "summary": "Move contributor documentation to a searchable home without losing ownership or review history."
+    },
+    {
+      "name": "Accessibility Audit",
+      "owner": "Avery Chen",
+      "status": "Complete",
+      "recentActivity": "The final audit report was published, with follow-up issues linked for the next planning cycle.",
+      "priority": "Low",
+      "summary": "Identify and document improvements that help every contributor navigate the project with confidence."
+    }
+  ]
+}

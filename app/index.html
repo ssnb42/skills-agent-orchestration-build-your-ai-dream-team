@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A contributor-friendly overview of project status, activity, and priorities.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <p class="dashboard-header__eyebrow">Team overview</p>
+        <h1>Project Pulse</h1>
+        <p>See what is moving, what needs attention, and how contributors can help next.</p>
+      </header>
+
+      <section class="summary-metrics" aria-label="Project summary">
+        <article class="summary-metric">
+          <dl>
+            <dt>Total projects</dt>
+            <dd id="total-projects">—</dd>
+          </dl>
+        </article>
+        <article class="summary-metric">
+          <dl>
+            <dt>Active projects</dt>
+            <dd id="active-projects">—</dd>
+          </dl>
+        </article>
+        <article class="summary-metric">
+          <dl>
+            <dt>High priority</dt>
+            <dd id="high-priority-projects">—</dd>
+          </dl>
+        </article>
+      </section>
+
+      <section class="project-list" aria-labelledby="projects-heading">
+        <h2 id="projects-heading">Projects</h2>
+        <div id="project-content" class="project-grid" aria-live="polite">
+          <div class="loading-state" role="status">
+            <p>Loading project updates…</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const content = document.querySelector("#project-content");
+        const totalProjects = document.querySelector("#total-projects");
+        const activeProjects = document.querySelector("#active-projects");
+        const highPriorityProjects = document.querySelector("#high-priority-projects");
+        const knownStatuses = new Set(["active", "planning", "at risk", "blocked", "complete"]);
+        const knownPriorities = new Set(["high", "medium", "low"]);
+
+        const getText = (value, fallback) => {
+          if (typeof value !== "string" || value.trim() === "") {
+            return fallback;
+          }
+          return value.trim();
+        };
+
+        const normalize = (value) => getText(value, "").toLowerCase();
+
+        const makeElement = (tagName, className, text) => {
+          const element = document.createElement(tagName);
+          if (className) {
+            element.className = className;
+          }
+          if (text !== undefined) {
+            element.textContent = text;
+          }
+          return element;
+        };
+
+        const showState = (className, message, role) => {
+          content.className = `project-grid ${className}`;
+          content.replaceChildren(makeElement("p", "", message));
+          if (role) {
+            content.setAttribute("role", role);
+          } else {
+            content.removeAttribute("role");
+          }
+        };
+
+        const createBadge = (label, kind, value, knownValues, fallbackLabel) => {
+          const normalizedValue = normalize(value);
+          const badgeLabel = knownValues.has(normalizedValue) ? label : fallbackLabel;
+          const badgeClass = kind === "status" ? "status-badge" : "priority-badge";
+          const badge = makeElement(
+            "span",
+            `${badgeClass}${knownValues.has(normalizedValue) ? ` ${badgeClass}--${normalizedValue.replaceAll(" ", "-")}` : ""}`,
+            badgeLabel
+          );
+          badge.dataset[kind] = value;
+          return badge;
+        };
+
+        const createProjectCard = (project, index) => {
+          const name = getText(project.name, "Unnamed project");
+          const owner = getText(project.owner, "Owner not provided");
+          const status = getText(project.status, "Status unavailable");
+          const recentActivity = getText(project.recentActivity, "No recent activity available.");
+          const priority = getText(project.priority, "Priority unavailable");
+          const summary = getText(project.summary, "No project summary available.");
+          const statusKey = normalize(status);
+          const priorityKey = normalize(priority);
+          const titleId = `project-title-${index + 1}`;
+          const card = makeElement("article", "project-card");
+          const header = makeElement("header", "project-card__header");
+          const title = makeElement("h3", "project-card__title", name);
+          const statusBadge = createBadge(status, "status", statusKey, knownStatuses, "Status unavailable");
+          const ownerText = makeElement("p", "project-card__owner");
+          const ownerLabel = makeElement("strong", "", "Owner: ");
+          ownerText.append(ownerLabel, document.createTextNode(owner));
+          const activitySection = makeElement("section", "project-card__activity");
+          const activityHeading = makeElement("h4", "", "Recent activity");
+          const activityText = makeElement("p", "", recentActivity);
+          const summarySection = makeElement("section", "project-card__summary");
+          const summaryHeading = makeElement("h4", "", "Summary");
+          const summaryText = makeElement("p", "", summary);
+          const prioritySection = makeElement("p", "project-card__priority");
+          const priorityLabel = makeElement("strong", "", "Priority:");
+          const priorityBadge = createBadge(
+            priority,
+            "priority",
+            priorityKey,
+            knownPriorities,
+            "Priority unavailable"
+          );
+
+          title.id = titleId;
+          card.setAttribute("aria-labelledby", titleId);
+          header.append(title, statusBadge);
+          activitySection.append(activityHeading, activityText);
+          summarySection.append(summaryHeading, summaryText);
+          prioritySection.append(priorityLabel, priorityBadge);
+          card.append(header, ownerText, activitySection, summarySection, prioritySection);
+          return card;
+        };
+
+        const renderProjects = (projects) => {
+          totalProjects.textContent = String(projects.length);
+          activeProjects.textContent = String(
+            projects.filter((project) => normalize(project.status) === "active").length
+          );
+          highPriorityProjects.textContent = String(
+            projects.filter((project) => normalize(project.priority) === "high").length
+          );
+          content.className = "project-grid";
+          content.removeAttribute("role");
+          content.replaceChildren(...projects.map(createProjectCard));
+        };
+
+        const loadProjects = async () => {
+          try {
+            const response = await fetch("project-data.json", { cache: "no-store" });
+            if (!response.ok) {
+              throw new Error(`Project data request failed with status ${response.status}.`);
+            }
+            const data = await response.json();
+            if (!data || !Array.isArray(data.projects)) {
+              throw new Error("Project data does not contain a projects array.");
+            }
+            if (data.projects.length === 0) {
+              totalProjects.textContent = "0";
+              activeProjects.textContent = "0";
+              highPriorityProjects.textContent = "0";
+              showState("empty-state", "No projects are available yet.");
+              return;
+            }
+            const validProjects = data.projects.filter(
+              (project) => project !== null && typeof project === "object" && !Array.isArray(project)
+            );
+            if (validProjects.length === 0) {
+              totalProjects.textContent = "0";
+              activeProjects.textContent = "0";
+              highPriorityProjects.textContent = "0";
+              showState("empty-state", "No readable projects are available yet.");
+              return;
+            }
+            renderProjects(validProjects);
+          } catch (error) {
+            totalProjects.textContent = "—";
+            activeProjects.textContent = "—";
+            highPriorityProjects.textContent = "—";
+            showState("error-state", "Project updates could not be loaded. Please try again later.", "alert");
+            console.error("Project Pulse data load failed:", error);
+          }
+        };
+
+        loadProjects();
+      })();
+    </script>
+  </body>
+</html>
