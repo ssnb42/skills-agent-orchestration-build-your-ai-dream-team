@@ -128,7 +128,9 @@ Planner의 계획을 바탕으로 작업을 단계화하고 Designer와 Coder의
 5. 요구사항을 충족하지 못한 항목이 있으면 담당 에이전트가 해당 파일만
    수정하고 통합 검토를 반복한다.
 
-## 5. Dependencies (파일 간 의존성)
+## Dependencies
+
+파일 간 의존성에 대한 설명입니다.
 
 ```text
 app/project-data.json
@@ -173,7 +175,9 @@ script는 `projects` 배열과 `name`, `owner`, `status`, `recentActivity`,
 “먼저”는 스키마와 파일을 먼저 확정한다는 의미다. 실제 HTTP 로딩 확인은
 HTML과 `launch.json`이 완성된 뒤 함께 수행한다.
 
-## 6. Ordering (작업 순서)
+## Ordering
+
+작업 순서에 대한 설명입니다.
 
 파일과 담당 에이전트의 구현 순서는 다음과 같다.
 
@@ -211,7 +215,9 @@ Planner의 요구사항 조사와 Designer의 초기 시각 설계는 병렬로 
 두 계약이 확정된 뒤에 작성한다. 네 파일이 모두 완성되기 전에는 통합
 검증을 실행하지 않는다.
 
-## 7. Validation (완료 후 검증 방법)
+## Validation
+
+완료 후 검증 방법에 대한 설명입니다.
 
 ### 정적 파일 및 데이터 검증
 
