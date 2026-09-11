@@ -64,6 +64,14 @@
 
         const normalize = (value) => getText(value, "").toLowerCase();
 
+        const isProject = (project) =>
+          project !== null &&
+          typeof project === "object" &&
+          !Array.isArray(project) &&
+          ["name", "owner", "status", "recentActivity", "priority"].every(
+            (field) => typeof project[field] === "string" && project[field].trim() !== ""
+          );
+
         const makeElement = (tagName, className, text) => {
           const element = document.createElement(tagName);
           if (className) {
@@ -162,7 +170,11 @@
             }
             const data = await response.json();
             if (!data || !Array.isArray(data.projects)) {
-              throw new Error("Project data does not contain a projects array.");
+              totalProjects.textContent = "—";
+              activeProjects.textContent = "—";
+              highPriorityProjects.textContent = "—";
+              showState("error-state", "Project data is invalid. The projects list could not be read.", "alert");
+              return;
             }
             if (data.projects.length === 0) {
               totalProjects.textContent = "0";
@@ -171,17 +183,14 @@
               showState("empty-state", "No projects are available yet.");
               return;
             }
-            const validProjects = data.projects.filter(
-              (project) => project !== null && typeof project === "object" && !Array.isArray(project)
-            );
-            if (validProjects.length === 0) {
+            if (!data.projects.every(isProject)) {
               totalProjects.textContent = "0";
               activeProjects.textContent = "0";
               highPriorityProjects.textContent = "0";
-              showState("empty-state", "No readable projects are available yet.");
+              showState("error-state", "Project data is invalid. Each project needs a name, owner, status, recent activity, and priority.", "alert");
               return;
             }
-            renderProjects(validProjects);
+            renderProjects(data.projects);
           } catch (error) {
             totalProjects.textContent = "—";
             activeProjects.textContent = "—";

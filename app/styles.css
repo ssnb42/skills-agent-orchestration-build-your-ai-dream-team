@@ -40,6 +40,7 @@ body {
   min-width: 18rem;
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 100% 0, rgb(217 231 255 / 52%), transparent 28rem),
     var(--color-page);
@@ -260,6 +261,23 @@ a:hover {
   color: var(--color-text-muted);
 }
 
+.project-card__activity h4,
+.project-card__summary h4 {
+  margin: 0 0 0.35rem;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.project-card__activity p,
+.project-card__summary p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .project-card__activity {
   padding-inline-start: 0.875rem;
   border-inline-start: 3px solid #b8c9e5;
@@ -428,6 +446,26 @@ a:hover {
 
   .project-card__header {
     display: grid;
+  }
+}
+
+@media (max-width: 30rem) {
+  .dashboard {
+    padding-block-end: 2rem;
+  }
+
+  .project-card {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .project-card__header {
+    gap: 0.5rem;
+  }
+
+  .status-badge,
+  .priority-badge {
+    white-space: normal;
   }
 }
 
