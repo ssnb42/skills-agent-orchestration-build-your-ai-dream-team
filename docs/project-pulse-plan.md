@@ -215,6 +215,9 @@ Planner의 요구사항 조사와 Designer의 초기 시각 설계는 병렬로 
 두 계약이 확정된 뒤에 작성한다. 네 파일이 모두 완성되기 전에는 통합
 검증을 실행하지 않는다.
 
+Designer and Coder can work in parallel on `app/styles.css` and
+`app/project-data.json` after the shared contracts are agreed.
+
 ## Validation
 
 완료 후 검증 방법에 대한 설명입니다.
@@ -252,6 +255,9 @@ Planner의 요구사항 조사와 Designer의 초기 시각 설계는 병렬로 
    상태, 최근 활동, 요약, 우선순위가 보이는지 확인한다.
 6. JSON 로드 실패, 빈 `projects` 배열, 필드 누락, 알 수 없는 상태나
    우선순위가 빈 화면 없이 처리되는지 확인한다.
+
+The final validation confirms that the data, rendered interface, and launch
+configuration work together through the configured HTTP server.
 
 ### UI·접근성 검증
 
